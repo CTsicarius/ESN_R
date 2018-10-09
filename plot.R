@@ -1,5 +1,6 @@
 library(rbokeh)
 figure(width = 700, title = "Testing", 
        xlab="T", ylab="log-price", legend_location = "top_right") %>%
-  MSE_array[1, ], color = "blue", width = 2, legend = "line 1") %>%
-  MSE_array[2, ], color = "green", width = 2, legend = "line 2")
+  ly_lines(number_of_train, MSE_array_esn[1, ], color = "red", width = 2, legend = "ESN") %>%
+  ly_lines(number_of_train, MSE_array_var[1, ], color = "blue", width = 2, legend = "VAR") %>%
+  x_axis(log = TRUE, label = 'SIZE OF TRAINING')
