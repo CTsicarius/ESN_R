@@ -32,7 +32,6 @@ cppFunction("arma::mat calculate_x_c(arma::mat u, arma::mat W, arma::mat Win, do
                         int T0 = u.n_cols;
                         arma::mat x = arma::zeros(Nx, T0);
                         arma::mat x_bar = arma::tanh(Win*arma::join_cols(arma::ones(1, 1), u.col(0)));
-                        //HASTA AQUI TODO BIEN
                         x.col(0) = alpha*x_bar;
                         for(int i = 1; i < T0; ++i){
                             x_bar = arma::tanh(Win*arma::join_cols(arma::ones(1, 1), u.col(i)) + W*x.col(i - 1));
@@ -41,7 +40,7 @@ cppFunction("arma::mat calculate_x_c(arma::mat u, arma::mat W, arma::mat Win, do
                         return(x);
             }", depends='RcppArmadillo')
 
-train_Wout <- function(y, u, W, Win, x = NULL, alpha, beta){
+train_Wout <- function(y, u, W, Win, x = NULL, alpha, beta, print_det = FALSE){
   if(is.null(x)){
     x <- calculate_x(u, W, Win, alpha)
   } 
@@ -50,6 +49,10 @@ train_Wout <- function(y, u, W, Win, x = NULL, alpha, beta){
   Nx <- dim(x)[1]
   T0 <- dim(u)[2]
   input <- rbind(matrix(1, 1, T0), rbind(u, x))
+  #print(max(abs(eigen(input %*% t(input), only.values = TRUE)$values)))
+  if(print_det){
+    print(det(input %*% t(input)))
+  }
   Wout <- t(solve(input %*% t(input) + beta*diag(Nx + Nu + 1), input %*% t(y)))
   return(Wout)
 }
