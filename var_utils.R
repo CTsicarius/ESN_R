@@ -54,3 +54,36 @@ MSE_error <- function(real_values, pred_values){
   T0 <- dim(real_values)[2]
   return(sum((real_values - pred_values)^2)/T0)
 }
+
+generate_var2 <- function(T0, phi0, PHI1, PHI2, sigma){
+  N <- nrow(PHI1)
+  r_mat <- matrix(0, N, T0)
+  r_mat[ , 1] = rep(1, N)
+  r_mat[ , 2] = rep(1, N)
+  for(i in 3:T0){
+    r_mat[, i] <- phi0 + PHI1 %*% r_mat[, i-1] + PHI2 %*% r_mat[, i -2] + MASS::mvrnorm(1, rep(0, N), sigma)
+  }
+  return(r_mat)
+}
+
+estimate_var2_parameters <- function(data){
+  N <- nrow(data)
+  T0 <- ncol(data)
+  data0 <- data[, 1:(T0 - 2)]
+  data1 <- data[, 2:(T0 - 1)]
+  input_data <- rbind(1, data1, data0)
+  res_data <- data[, 3:T0]
+  return(t(solve(input_data %*% t(input_data), input_data %*% t(res_data))))
+}
+
+make_var2_predictions <- function(data, PHI){
+  N <- nrow(data)
+  T0 <- ncol(data)
+  data0 <- data[, 1:(T0 - 2)]
+  data1 <- data[, 2:(T0 - 1)]
+  input_data <- rbind(1, data1, data0)
+  res <-  PHI%*%input_data
+  return(res)
+}
+
+
