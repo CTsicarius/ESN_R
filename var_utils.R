@@ -16,7 +16,7 @@ generate_PHI_normal <- function(N, mu = 0, sigma = 1, ro = 1){
   return(PHI)
 }
 
-estimate_parameters <- function(data){
+estimate_var1_parameters <- function(data){
   #CVXR
   N <- dim(data)[1]
   T0 <- dim(data)[2]
@@ -58,8 +58,8 @@ MSE_error <- function(real_values, pred_values){
 generate_var2 <- function(T0, phi0, PHI1, PHI2, sigma){
   N <- nrow(PHI1)
   r_mat <- matrix(0, N, T0)
-  r_mat[ , 1] = rep(1, N)
-  r_mat[ , 2] = rep(1, N)
+  r_mat[ , 1] = matrix(rnorm(10), N, 1)
+  r_mat[ , 2] = matrix(rnorm(10), N, 1)
   for(i in 3:T0){
     r_mat[, i] <- phi0 + PHI1 %*% r_mat[, i-1] + PHI2 %*% r_mat[, i -2] + MASS::mvrnorm(1, rep(0, N), sigma)
   }
@@ -69,10 +69,10 @@ generate_var2 <- function(T0, phi0, PHI1, PHI2, sigma){
 estimate_var2_parameters <- function(data){
   N <- nrow(data)
   T0 <- ncol(data)
-  data0 <- data[, 1:(T0 - 2)]
-  data1 <- data[, 2:(T0 - 1)]
+  data0 <- data[, 1:(T0 - 2), drop = FALSE]
+  data1 <- data[, 2:(T0 - 1), drop = FALSE]
   input_data <- rbind(1, data1, data0)
-  res_data <- data[, 3:T0]
+  res_data <- data[, 3:T0, drop = FALSE]
   return(t(solve(input_data %*% t(input_data), input_data %*% t(res_data))))
 }
 

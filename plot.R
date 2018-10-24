@@ -12,12 +12,15 @@ library(reshape)
 library(RColorBrewer)
 it_array = rho_array
 df <- as.data.frame(cbind(number_of_train, cbind(MSE_array_var, MSE_array_esn)))
+#df <- as.data.frame(cbind(number_of_train, MSE_array_esn))
 df <- melt(df, id.vars = 'number_of_train')
 gg <- ggplot(data=df,
        aes(x=number_of_train, y=value, colour=variable)) +
        theme_bw() + theme(text = element_text(size=14)) + theme(axis.text=element_text(size=rel(1.2))) +
        geom_line() + geom_point() + scale_x_log10() + xlab('SIZE OF TRAINING') + ylab('MSE ERROR') +
-       scale_color_manual(name = 'rho(W)', labels = c('VAR model', it_array), values = c('red', brewer.pal(length(it_array), "Paired")))
+       scale_color_manual(name = 'Nx', labels = c('VAR2 model', it_array),
+                          values = c('blue', brewer.pal(length(it_array), "Paired")))
 plot(gg)
 
-ggsave(filename = 'rho_plot.pdf', plot = gg, device = 'pdf')
+#FOR SAVE
+ggsave('nx_var1.pdf',plot = gg, device = 'pdf')
